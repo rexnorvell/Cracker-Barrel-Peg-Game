@@ -1,0 +1,77 @@
+#include "Board.h"
+#include "Node.h"
+#include "Solver.h"
+
+#include <iostream>
+
+void welcome_user();
+void print_control_panel();
+void find_all_solutions();
+void determine_hardest_starting_configuration();
+
+int main() {
+    welcome_user();
+    char user_input;
+
+    while (true) {
+        print_control_panel();
+        std::cin >> user_input;
+        std::cout << std::endl;
+
+        if (user_input == 'q') {
+            break;
+        }
+        else if (user_input == 'a') {
+            find_all_solutions();
+        }
+        else if (user_input == 'h') {
+            determine_hardest_starting_configuration();
+        }
+    }
+
+    return 0;
+}
+
+void welcome_user() {
+    std::string welcome_message = "| Welcome to the Cracker Barrel Peg Game Solver! |";
+    std::string dash_border(welcome_message.length(), '-');
+    std::cout << dash_border << std::endl;
+    std::cout << welcome_message << std::endl;
+    std::cout << dash_border << std::endl;
+}
+
+void print_control_panel() {
+    std::cout << std::endl;
+    std::cout << "-----------------------------------------------------" << std::endl;
+    std::cout << "| Control Panel:                                    |" << std::endl;
+    std::cout << "| a - prints all solutions for the default game     |" << std::endl;
+    std::cout << "| h - determines the hardest starting configuration |" << std::endl;
+    std::cout << "| q - quits the program                             |" << std::endl;
+    std::cout << "-----------------------------------------------------" << std::endl;
+    std::cout << std::endl;
+}
+
+void find_all_solutions() {
+    std::cout << "Calculating solutions..." << std::endl;
+    Node root = Node(Board(), nullptr);
+    Solver solver = Solver(root);
+    solver.print_solutions();
+}
+
+void determine_hardest_starting_configuration() {
+    for (int i = 0; i < Board::BOARD_SIZE; i++) {
+        std::cout << "Calculating for Board #" << i + 1 << "..." << std::endl;
+        std::array<int, Board::BOARD_SIZE> starting_state;
+
+        for (int j = 0; j < Board::BOARD_SIZE; j++) {
+            starting_state[j] = (j == i) ? (0) : (1);
+        }
+        
+        Board board = Board(starting_state);
+        board.print_state();
+        Node root = Node(board, nullptr);
+        Solver solver = Solver(root);
+        std::vector<Node*> solutions = solver.get_solutions();
+        std::cout << solutions.size() << " solutions for Board #" << i + 1 << "." << std::endl;
+    }
+}
