@@ -27,6 +27,7 @@ class Board {
         std::array<int, BOARD_SIZE> get_state();
         bool is_solved() const;
         bool is_stalemate() const;
+        int get_remaining_peg_count() const;
     
     private:
         std::array<int, BOARD_SIZE> state;

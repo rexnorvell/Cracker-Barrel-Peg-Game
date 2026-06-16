@@ -3,11 +3,13 @@
 #include "Solver.h"
 
 #include <iostream>
+#include <limits>
 
 void welcome_user();
 void print_control_panel();
 void find_all_solutions();
 void determine_hardest_starting_configuration();
+void play_game();
 
 int main() {
     welcome_user();
@@ -26,6 +28,9 @@ int main() {
         }
         else if (user_input == 'h') {
             determine_hardest_starting_configuration();
+        }
+        else if (user_input == 'p') {
+            play_game();
         }
     }
 
@@ -46,6 +51,7 @@ void print_control_panel() {
     std::cout << "| Control Panel:                                    |" << std::endl;
     std::cout << "| a - prints all solutions for the default game     |" << std::endl;
     std::cout << "| h - determines the hardest starting configuration |" << std::endl;
+    std::cout << "| p - play the Cracker Barrel peg game              |" << std::endl;
     std::cout << "| q - quits the program                             |" << std::endl;
     std::cout << "-----------------------------------------------------" << std::endl;
     std::cout << std::endl;
@@ -73,5 +79,33 @@ void determine_hardest_starting_configuration() {
         Solver solver = Solver(root);
         std::vector<Node*> solutions = solver.get_solutions();
         std::cout << solutions.size() << " solutions for Board #" << i + 1 << "." << std::endl;
+    }
+}
+
+void play_game() {
+    Board board = Board();
+    board.print_state();
+    while (board.get_legal_moves().size() > 0) {
+        board.print_legal_moves();
+        int number_of_moves = board.get_legal_moves().size();
+        int move = 0;
+        if (!(std::cin >> move)) {
+            std::cout << "Error: Input an integer between 1 and " << number_of_moves << "." << std::endl;
+            std::cin.clear();
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+        }
+        else if (move < 1 || move > number_of_moves) {
+            std::cout << "Error: Input an integer between 1 and " << number_of_moves << "." << std::endl;
+        }
+        else {
+            board.execute_move(board.get_legal_moves()[move - 1]);
+        }
+        board.print_state();
+    }
+    if (board.is_solved()) {
+        std::cout << "Congratulations! You won!" << std::endl;
+    }
+    else {
+        std::cout << "Game over! " << board.get_remaining_peg_count() << " pegs remaining." << std::endl;
     }
 }

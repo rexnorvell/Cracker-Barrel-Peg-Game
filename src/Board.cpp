@@ -192,15 +192,19 @@ bool Board::is_valid_move(Move move) const {
 }
 
 bool Board::is_solved() const {
-    int peg_counter = 0;
+    return get_remaining_peg_count() == 1;
+}
+
+int Board::get_remaining_peg_count() const {
+    int peg_count = 0;
 
     for (int peg_value : this->state) {
         if (peg_value == 1) {
-            peg_counter++;
+            peg_count++;
         }
     }
 
-    return peg_counter == 1;
+    return peg_count;
 }
 
 bool Board::is_stalemate() const {
