@@ -13,24 +13,32 @@ void play_game();
 
 int main() {
     welcome_user();
-    char user_input;
+    std::string user_input;
 
     while (true) {
         print_control_panel();
-        std::cin >> user_input;
+        
+        std::getline(std::cin, user_input);
         std::cout << std::endl;
 
-        if (user_input == 'q') {
+        if (user_input.empty()) {
+            std::cout << "Error: Input error." << std::endl;
+            std::cin.clear();
+        }
+        else if (user_input == "q") {
             break;
         }
-        else if (user_input == 'a') {
+        else if (user_input == "a") {
             find_all_solutions();
         }
-        else if (user_input == 'h') {
+        else if (user_input == "h") {
             determine_hardest_starting_configuration();
         }
-        else if (user_input == 'p') {
+        else if (user_input == "p") {
             play_game();
+        }
+        else {
+            std::cout << "Error: Invalid option." << std::endl;
         }
     }
 
@@ -88,17 +96,30 @@ void play_game() {
     while (board.get_legal_moves().size() > 0) {
         board.print_legal_moves();
         int number_of_moves = board.get_legal_moves().size();
-        int move = 0;
-        if (!(std::cin >> move)) {
-            std::cout << "Error: Input an integer between 1 and " << number_of_moves << "." << std::endl;
+        std::string error_string = "Error: Input an integer between 1 and " + std::to_string(number_of_moves) + ".";
+        std::string move_string;
+        std::getline(std::cin, move_string);
+        if (move_string.empty()) {
+            std::cout << error_string << std::endl;
             std::cin.clear();
-            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-        }
-        else if (move < 1 || move > number_of_moves) {
-            std::cout << "Error: Input an integer between 1 and " << number_of_moves << "." << std::endl;
         }
         else {
-            board.execute_move(board.get_legal_moves()[move - 1]);
+            try {
+                size_t pos;
+                int move = std::stoi(move_string, &pos);
+                if (pos != move_string.size()) {
+                    std::cout << error_string << std::endl;
+                }
+                else if (move < 1 || move > number_of_moves) {
+                    std::cout << error_string << std::endl;
+                }
+                else {
+                    board.execute_move(board.get_legal_moves()[move - 1]);
+                }
+            }
+            catch (...) {
+                std::cout << error_string << std::endl;
+            }
         }
         board.print_state();
     }
